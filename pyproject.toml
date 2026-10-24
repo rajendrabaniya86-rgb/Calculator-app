@@ -1,0 +1,58 @@
+[project]
+name = "my-colorful-calculator"
+version = "1.0.0"
+description = "A colorful calculator Android app"
+requires-python = ">=3.10"
+dependencies = [
+    "flet>=0.80.0"
+]
+
+[tool.flet]
+org = "com.mycalculator.app"
+product = "My Colorful Calculator"
+
+[tool.flet.app]
+path = "src"
+:::
+
+:::
+
+## 3. APK बनाने वाला GitHub कोड
+
+प्रोजेक्ट में यह फ़ाइल बनाएँ:
+
+`.github/workflows/build-apk.yml`
+
+और इसमें यह कोड डालें।
+
+:::writing{variant="standard" id="57383"}
+```yaml
+name: Build Calculator APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download project
+        uses: actions/checkout@v4
+
+      - name: Build Android APK
+        id: build
+        uses: flet-dev/flet-build-action@v1
+        with:
+          target: apk
+          build-number: ${{ github.run_number }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-apk
+          path: ${{ steps.build.outputs.archive-path }}
+          if-no-files-found: error
